@@ -112,6 +112,28 @@ def get_birth_date(name: str) -> str:
     return match.group("birth")
 
 
+def getDayDie(name: str) -> str:
+    infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
+    pattern = r"(?:Died[^a-zA-Z]*)(?P<deceased>[A-Za-z0-9\s,-]+)"
+    error_text = "Page infobox has no deceased information"
+    match = get_match(infobox_text, pattern, error_text)
+    return match.group("deceased")
+
+def familyOfAnimal(animal: str) -> str:
+    infobox_text = clean_text(get_first_infobox_text(get_page_html(animal)))
+    pattern = r"(?:Family[^a-zA-Z]*)(?P<family>[A-Za-z]+)"
+    error_text = "Page infobox has no animal family information"
+    match = get_match(infobox_text, pattern, error_text)
+    return match.group("family")
+
+def countryCapital(country: str) -> str:
+    infobox_text = clean_text(get_first_infobox_text(get_page_html(country)))
+    pattern = r"(?:Capital[^a-zA-Z]*)(?P<capital>[A-Za-z\s,.-]+)"
+    error_text = "Page infobox has no capital of the country information"
+    match = get_match(infobox_text, pattern, error_text)
+    return match.group("capital")
+
+
 # below are a set of actions. Each takes a list argument and returns a list of answers
 # according to the action and the argument. It is important that each function returns a
 # list of the answer(s) and not just the answer itself.
@@ -140,6 +162,15 @@ def polar_radius(matches: List[str]) -> List[str]:
     """
     return [get_polar_radius(matches[0])]
 
+def dayDie(matches: List[str]) -> List[str]:
+    return [getDayDie(" ".join(matches))]
+
+def animalfamily(matches: List[str]) -> List[str]:
+    return [familyOfAnimal(matches[0])]
+
+
+def countrycapital(matches: List[str]) -> List[str]:
+    return [countryCapital(matches[0])]
 
 # dummy argument is ignored and doesn't matter
 def bye_action(dummy: List[str]) -> None:
@@ -156,6 +187,9 @@ Action = Callable[[List[str]], List[Any]]
 pa_list: List[Tuple[Pattern, Action]] = [
     ("when was % born".split(), birth_date),
     ("what is the polar radius of %".split(), polar_radius),
+    ("when did % die".split(), dayDie),
+    ("what family is a % from".split(), animalfamily),
+    ("what is the capital of %".split(), countrycapital),
     (["bye"], bye_action),
 ]
 
