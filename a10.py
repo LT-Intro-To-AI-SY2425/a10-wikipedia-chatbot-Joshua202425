@@ -121,17 +121,25 @@ def getDayDie(name: str) -> str:
 
 def familyOfAnimal(animal: str) -> str:
     infobox_text = clean_text(get_first_infobox_text(get_page_html(animal)))
-    pattern = r"(?:Family[^a-zA-Z]*)(?P<family>[A-Za-z]+)"
+    pattern = r"(?:Family[^a-zA-Z]*)(?P<family>[A-Za-z]+)\b"
     error_text = "Page infobox has no animal family information"
     match = get_match(infobox_text, pattern, error_text)
     return match.group("family")
+ 
 
 def countryCapital(country: str) -> str:
     infobox_text = clean_text(get_first_infobox_text(get_page_html(country)))
-    pattern = r"(?:Capital[^a-zA-Z]*)(?P<capital>[A-Za-z\s,.-]+)"
+    pattern = r"(?:Capital[^a-zA-Z]*)(?P<capital>[A-Za-z]+(?:\s[A-Za-z]+)?)(?=\s*[,.]|$)"
     error_text = "Page infobox has no capital of the country information"
     match = get_match(infobox_text, pattern, error_text)
-    return match.group("capital")
+    x=0
+    for char in match.group("capital"):
+        if char.isupper():  
+            break 
+        else:
+            x+=1
+    return match.group("capital")[x:]
+    
 
 
 # below are a set of actions. Each takes a list argument and returns a list of answers
